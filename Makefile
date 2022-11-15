@@ -69,7 +69,7 @@ clean:
 	rm -rf iso_root calOS.iso calOS.hdd
 	$(MAKE) -C kernel clean
 
-.PHONY: distclean
-distclean: clean
+.PHONY: fullclean
+fullclean: clean
 	rm -rf limine ovmf-x64
 	$(MAKE) -C kernel distclean
