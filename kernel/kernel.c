@@ -1,15 +1,13 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <limine.h>
+#include <gdt.h>
+#include "idt.h"
 
-// The Limine requests can be placed anywhere, but it is important that
-// the compiler does not optimise them away, so, usually, they should
-// be made volatile or equivalent.
+#include "io.h"
+#include "tty.h"
+#include <stdio.h>
 
-static volatile struct limine_terminal_request terminal_request = {
-    .id = LIMINE_TERMINAL_REQUEST,
-    .revision = 0
-};
 
 static void done(void) {
     for (;;) {
@@ -17,19 +15,35 @@ static void done(void) {
     }
 }
 
+
+volatile struct limine_terminal_request terminal_request = {
+    .id = LIMINE_TERMINAL_REQUEST,
+    .revision = 0
+};
+
+// static volatile struct limine_kernel_address_request kaddr = {
+//     .id = LIMINE_KERNEL_ADDRESS_REQUEST,
+//     .revision = 0,
+// };
 // The following will be our kernel's entry point.
 void _start(void) {
-    // Ensure we got a terminal
+
     if (terminal_request.response == NULL
      || terminal_request.response->terminal_count < 1) {
         done();
     }
+    printf("Loading Kernel\n");
+    printf("Loading GDT\n");
+    load_gdt(&gdt_descriptor);
 
-    // We should now be able to call the Limine terminal to print out
-    // a simple "Hello World" to screen.
-    struct limine_terminal *terminal = terminal_request.response->terminals[0];
-    terminal_request.response->write(terminal, "Hello World", 11);
-
-    // We're done, just hang...
+    printf("Loading IDT\n");
+    idt_init();
+    
+    printf("Testing exception 0x3\n");
+    __asm__ volatile ("int $0x3");
+    
+    printf("Kernel load done!\n");
+    printf("(-.-)");
+    
     done();
 }

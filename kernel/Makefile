@@ -12,13 +12,8 @@ define DEFAULT_VAR =
     endif
 endef
 
-# It is highly recommended to use a custom built cross toolchain to build a kernel.
-# We are only using "cc" as a placeholder here. It may work by using
-# the host system's toolchain, but this is not guaranteed.
-$(eval $(call DEFAULT_VAR,CC,cc))
-
-# Same thing for "ld" (the linker).
-$(eval $(call DEFAULT_VAR,LD,ld))
+CC = x86_64-elf-gcc
+LD = x86_64-elf-ld
 
 # User controllable CFLAGS.
 CFLAGS ?= -g -O2 -pipe -Wall -Wextra
@@ -51,7 +46,8 @@ override CFLAGS +=       \
     -mno-red-zone        \
     -mcmodel=kernel      \
     -MMD                 \
-    -I.
+    -I.                  \
+    -I./lib/include      \
 
 # Internal linker flags that should not be changed by the user.
 override LDFLAGS +=         \
@@ -88,9 +84,6 @@ limine.h:
 $(KERNEL): $(OBJ)
 	$(LD) $(OBJ) $(LDFLAGS) -o $@
 
-# Include header dependencies.
--include $(HEADER_DEPS)
-
 # Compilation rules for *.c files.
 %.o: %.c limine.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
@@ -103,6 +96,9 @@ $(KERNEL): $(OBJ)
 %.o: %.asm
 	nasm $(NASMFLAGS) $< -o $@
 
+
+# Include header dependencies.
+-include $(HEADER_DEPS)
 # Remove object files and the final executable.
 .PHONY: clean
 clean:
