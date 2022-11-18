@@ -6,19 +6,19 @@ all: calOS.iso
 
 .PHONY: run
 run: calOS.iso
-	qemu-system-x86_64 -M q35 -m 2G -cdrom calOS.iso -boot d
+	qemu-system-x86_64 -M q35 -m 2G -cdrom calOS.iso -boot d -serial telnet:localhost:4321,server,nowait
 
 .PHONY: run-uefi
 run-uefi: ovmf-x64 calOS.iso
-	qemu-system-x86_64 -M q35 -m 2G -bios ovmf-x64/OVMF.fd -cdrom calOS.iso -boot d
+	qemu-system-x86_64 -M q35 -m 2G -bios ovmf-x64/OVMF.fd -cdrom calOS.iso -boot d -serial telnet:localhost:4321,server,nowait
 
 .PHONY: run-hdd
 run-hdd: calOS.hdd
-	qemu-system-x86_64 -M q35 -m 2G -hda calOS.hdd
+	qemu-system-x86_64 -M q35 -m 2G -hda calOS.hdd -serial telnet:localhost:4321,server,nowait
 
 .PHONY: run-hdd-uefi
 run-hdd-uefi: ovmf-x64 calOS.hdd
-	qemu-system-x86_64 -M q35 -m 2G -bios ovmf-x64/OVMF.fd -hda calOS.hdd
+	qemu-system-x86_64 -M q35 -m 2G -bios ovmf-x64/OVMF.fd -hda calOS.hdd -serial telnet:localhost:4321,server,nowait
 
 ovmf-x64:
 	mkdir -p ovmf-x64

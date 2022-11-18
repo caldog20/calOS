@@ -5,27 +5,23 @@
 #include "idt.h"
 
 #include "io.h"
-#include "tty.h"
+#include <tty.h>
 #include <stdio.h>
-
+#include "pic.h"
+#include "serial.h"
 
 static void done(void) {
+    __asm__("cli");
     for (;;) {
         __asm__("hlt");
     }
 }
-
 
 volatile struct limine_terminal_request terminal_request = {
     .id = LIMINE_TERMINAL_REQUEST,
     .revision = 0
 };
 
-// static volatile struct limine_kernel_address_request kaddr = {
-//     .id = LIMINE_KERNEL_ADDRESS_REQUEST,
-//     .revision = 0,
-// };
-// The following will be our kernel's entry point.
 void _start(void) {
 
     if (terminal_request.response == NULL
@@ -39,11 +35,19 @@ void _start(void) {
     printf("Loading IDT\n");
     idt_init();
     
-    printf("Testing exception 0x3\n");
-    __asm__ volatile ("int $0x3");
+    printf("Initializing Pic\n");
+    pic_remap_offsets(0x20);
+    printf("Unmasking keyboard interrupt\n");
+    pic_unmask_irq(1);
+    kb_init();
     
     printf("Kernel load done!\n");
-    printf("(-.-)");
+    printf("(-.-)\n");
+    serial_terminal()->puts("\nTesting Serial\n");
+
+    while(1) {
+
+    }
+
     
-    done();
 }

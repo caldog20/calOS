@@ -48,6 +48,7 @@ override CFLAGS +=       \
     -MMD                 \
     -I.                  \
     -I./lib/include      \
+    -I./arch/x86_64
 
 # Internal linker flags that should not be changed by the user.
 override LDFLAGS +=         \
