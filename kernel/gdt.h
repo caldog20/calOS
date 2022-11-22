@@ -35,14 +35,11 @@ typedef enum {
 #define GDT_BASE_MIDDLE(base) ((base >> 16) & 0xff)
 #define GDT_FLAGS_LIMIT_HI(limit, flags) (((limit >> 16) & 0xf) | (flags & 0xf0))
 #define GDT_BASE_HIGH(base) ((base >> 24) & 0xff)
-#define GDT_ENTRY(base, limit, access, flags) { \
-    GDT_LIMIT_LOW(limit), \
-    GDT_BASE_LOW(base), \
-    GDT_BASE_MIDDLE(base), \
-    access, \
-    GDT_FLAGS_LIMIT_HI(limit, flags), \
-    GDT_BASE_HIGH(base) \
-}
+#define GDT_ENTRY(base, limit, access, flags)                                                                      \
+    {                                                                                                              \
+        GDT_LIMIT_LOW(limit), GDT_BASE_LOW(base), GDT_BASE_MIDDLE(base), access, GDT_FLAGS_LIMIT_HI(limit, flags), \
+            GDT_BASE_HIGH(base)                                                                                    \
+    }
 
 typedef struct {
     uint16_t LimitLow;
@@ -51,7 +48,7 @@ typedef struct {
     uint8_t Access;
     uint8_t LimitHi_Flags;
     uint8_t BaseHigh;
-}  __attribute__((packed)) gdt_entry_t;
+} __attribute__((packed)) gdt_entry_t;
 
 // GDT has segments for 16, 32, and 64bit due to limeine requirments
 
@@ -66,10 +63,9 @@ typedef struct {
 } __attribute__((packed)) gdt_t;
 
 typedef struct {
-    uint16_t Limit; // sizeof(gdt) - 1
-    uint64_t Offset; // address of GDT
+    uint16_t Limit;   // sizeof(gdt) - 1
+    uint64_t Offset;  // address of GDT
 } __attribute__((packed)) gdt_descriptor_t;
-
 
 extern gdt_t gdt_table;
 extern gdt_descriptor_t gdt_descriptor;

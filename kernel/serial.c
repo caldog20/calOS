@@ -1,5 +1,7 @@
-#include <stdbool.h>
 #include "serial.h"
+
+#include <stdbool.h>
+
 #include "io.h"
 
 static serial_terminal_t singleton_terminal_instance;
@@ -11,9 +13,7 @@ static void serial_message(const char* message) {
     }
 }
 
-serial_terminal_t* serial_terminal() {
-    return &singleton_terminal_instance;
-}
+serial_terminal_t* serial_terminal() { return &singleton_terminal_instance; }
 
 static serial_terminal_t* puts(const char* s) {
     serial_message(s);
@@ -26,7 +26,6 @@ static serial_terminal_t* putc(const char c) {
 }
 
 static serial_terminal_t* putul(uint64_t ul) {
-
     if (!ul) {
         serial_message("0x0");
         return &singleton_terminal_instance;
@@ -38,8 +37,7 @@ static serial_terminal_t* putul(uint64_t ul) {
     int index = 17;
 
     for (; index > 1; index--) {
-        if (!ul)
-            break;
+        if (!ul) break;
 
         unsigned int remainder = ul % 16;
         ul /= 16;
@@ -52,12 +50,11 @@ static serial_terminal_t* putul(uint64_t ul) {
     buffer[index] = '0';
 
     serial_message(&buffer[index]);
-    
+
     return &singleton_terminal_instance;
 }
 
 static serial_terminal_t* putd(int64_t d) {
-
     if (!d) {
         serial_message("0");
         return &singleton_terminal_instance;
@@ -71,8 +68,7 @@ static serial_terminal_t* putd(int64_t d) {
     int index = 20;
 
     for (; index > 0; index--) {
-        if (!d)
-            break;
+        if (!d) break;
 
         unsigned int remainder = d % 10;
         d /= 10;
@@ -92,9 +88,4 @@ static serial_terminal_t* putd(int64_t d) {
     return &singleton_terminal_instance;
 }
 
-static serial_terminal_t singleton_terminal_instance = {
-    puts,
-    putc,
-    putul,
-    putd
-};
+static serial_terminal_t singleton_terminal_instance = {puts, putc, putul, putd};
